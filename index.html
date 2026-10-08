@@ -1,0 +1,1151 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Pathfinder | Ultimate r/learnpython Learning Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pyblue: '#306998',
+                        pyyellow: '#FFE873',
+                        pydark: '#0F172A',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Pyodide for Browser Python Execution -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom glow effects */
+        .py-glow {
+            box-shadow: 0 0 20px rgba(48, 105, 152, 0.25);
+        }
+        .py-yellow-glow {
+            box-shadow: 0 0 20px rgba(255, 232, 115, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-sky-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('roadmap')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-amber-400 p-0.5 flex items-center justify-center shadow-lg shadow-sky-900/30">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                        <i class="fa-brands fa-python text-2xl bg-gradient-to-r from-sky-400 to-amber-300 bg-clip-text text-transparent"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-sky-300 bg-clip-text text-transparent">Python Pathfinder</h1>
+                    <p class="text-xs text-sky-400/90 font-medium flex items-center gap-1">
+                        <i class="fa-brands fa-reddit text-orange-500"></i> Based on r/learnpython resources
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs (Desktop) -->
+            <nav class="hidden md:flex items-center space-x-1 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80">
+                <button id="nav-roadmap" onclick="switchTab('roadmap')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-sky-400 bg-slate-800/80 shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-route text-sky-400"></i> Pathfinder Quiz
+                </button>
+                <button id="nav-resources" onclick="switchTab('resources')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-amber-400"></i> Resource Hub
+                </button>
+                <button id="nav-playground" onclick="switchTab('playground')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 flex items-center gap-2">
+                    <i class="fa-solid fa-terminal text-emerald-400"></i> Python Sandbox
+                </button>
+                <button id="nav-challenges" onclick="switchTab('challenges')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 flex items-center gap-2">
+                    <i class="fa-solid fa-code text-purple-400"></i> Exercises
+                </button>
+                <button id="nav-projects" onclick="switchTab('projects')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project text-pink-400"></i> Project Ideas
+                </button>
+                <button id="nav-faq" onclick="switchTab('faq')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-yellow-400"></i> Reddit Wisdom
+                </button>
+            </nav>
+
+            <!-- Quick Action Stats / Mobile Toggle -->
+            <div class="flex items-center space-x-3">
+                <div class="hidden lg:flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-slate-400">Saved Progress:</span>
+                    <span id="saved-progress-count" class="font-semibold text-sky-400">0/15 Topics</span>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-800 bg-slate-900 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('roadmap'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-sky-400 bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-route text-sky-400"></i> Pathfinder Quiz & Roadmap
+            </button>
+            <button onclick="switchTab('resources'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark text-amber-400"></i> Curated Resource Hub
+            </button>
+            <button onclick="switchTab('playground'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-emerald-400"></i> Browser Python Sandbox
+            </button>
+            <button onclick="switchTab('challenges'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-code text-purple-400"></i> Interactive Exercises
+            </button>
+            <button onclick="switchTab('projects'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-diagram-project text-pink-400"></i> Project Ideas by Skill
+            </button>
+            <button onclick="switchTab('faq'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-yellow-400"></i> Reddit FAQ & Best Practices
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: PATHFINDER QUIZ & ROADMAP -->
+        <section id="tab-roadmap" class="tab-content block space-y-6">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-sky-950/40 to-slate-900 border border-slate-800 p-6 md:p-8 py-glow">
+                <div class="relative z-10 max-w-3xl space-y-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs font-semibold uppercase tracking-wider">
+                        <i class="fa-solid fa-compass"></i> Community Recommended Strategy
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                        Where Should You Start Learning Python?
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        There are hundreds of Python tutorials online, but not all of them fit your personal background, goal, or learning style. Answer 3 quick questions to receive a tailored 4-step roadmap synthesized from top r/learnpython thread recommendations!
+                    </p>
+                </div>
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+
+            <!-- Quiz Container -->
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Pathfinder Questionnaire
+                    </h3>
+                    <span id="quiz-step-indicator" class="text-xs font-semibold text-slate-400 bg-slate-800 px-3 py-1 rounded-full">Step 1 of 3</span>
+                </div>
+
+                <!-- Step 1: Goal -->
+                <div id="quiz-step-1" class="quiz-step space-y-4">
+                    <label class="block text-sm font-medium text-slate-200">1. What is your primary motivation for learning Python?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <button onclick="selectQuizOption(1, 'automation')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-robot text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Automate Tasks & Work</h4>
+                            <p class="text-xs text-slate-400">Scrape web data, clean Excel sheets, automate emails and file handling.</p>
+                        </button>
+                        <button onclick="selectQuizOption(1, 'software')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-laptop-code text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Software & Web Dev</h4>
+                            <p class="text-xs text-slate-400">Build backend APIs, web apps using Django/Flask, and standalone tools.</p>
+                        </button>
+                        <button onclick="selectQuizOption(1, 'datascience')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-chart-pie text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Data & AI / ML</h4>
+                            <p class="text-xs text-slate-400">Analyze data sets, machine learning models, Pandas, NumPy, visualization.</p>
+                        </button>
+                        <button onclick="selectQuizOption(1, 'general')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-brain text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">General Computer Science</h4>
+                            <p class="text-xs text-slate-400">Learn fundamental programming concepts, problem solving, algorithms.</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Experience -->
+                <div id="quiz-step-2" class="quiz-step hidden space-y-4">
+                    <label class="block text-sm font-medium text-slate-200">2. What is your current programming background?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button onclick="selectQuizOption(2, 'beginner')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-seedling text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Absolute Beginner</h4>
+                            <p class="text-xs text-slate-400">Never written a line of code before. Need step-by-step explanations.</p>
+                        </button>
+                        <button onclick="selectQuizOption(2, 'dabbler')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-puzzle-piece text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Dabbled A Bit</h4>
+                            <p class="text-xs text-slate-400">Know basic HTML/Excel or tried basic Python syntax but feel stuck in tutorial hell.</p>
+                        </button>
+                        <button onclick="selectQuizOption(2, 'programmer')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-code-compare text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Experienced Programmer</h4>
+                            <p class="text-xs text-slate-400">Already know C++, Java, JS or C#, just want to quickly pick up Python idioms & syntax.</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Format Preference -->
+                <div id="quiz-step-3" class="quiz-step hidden space-y-4">
+                    <label class="block text-sm font-medium text-slate-200">3. How do you learn best?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button onclick="selectQuizOption(3, 'interactive')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-keyboard text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Interactive Coding</h4>
+                            <p class="text-xs text-slate-400">Learn by typing code immediately in interactive browser environments with feedback.</p>
+                        </button>
+                        <button onclick="selectQuizOption(3, 'book')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-book-open text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Books & Structured Text</h4>
+                            <p class="text-xs text-slate-400">Prefer structured reading, clear code examples, and self-paced projects.</p>
+                        </button>
+                        <button onclick="selectQuizOption(3, 'video')" class="quiz-opt-btn p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-sky-500/60 hover:bg-slate-800/50 text-left transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400 mb-3 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-video text-lg"></i>
+                            </div>
+                            <h4 class="font-semibold text-white text-sm mb-1">Video Courses & YouTube</h4>
+                            <p class="text-xs text-slate-400">Prefer watching expert walkthroughs while following along in my code editor.</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Container -->
+                <div id="quiz-results" class="hidden space-y-6 pt-2">
+                    <div class="p-4 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Your Personal Python Pathway</h4>
+                                <p id="result-summary-text" class="text-xs text-slate-300">Customized roadmap based on your selections.</p>
+                            </div>
+                        </div>
+                        <button onclick="resetQuiz()" class="text-xs text-slate-400 hover:text-white underline">Reset Quiz</button>
+                    </div>
+
+                    <!-- Step Cards Roadmap -->
+                    <div id="roadmap-cards-container" class="space-y-4">
+                        <!-- Dynamic content injected by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CURATED RESOURCE HUB -->
+        <section id="tab-resources" class="tab-content hidden space-y-6">
+            <!-- Header & Filter Toolbar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> Top Rated Resources in r/learnpython
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Community consensus recommendations with zero fluff, free access tiers, and links.</p>
+                </div>
+
+                <!-- Filter & Search -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="relative min-w-[200px]">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input id="resource-search" oninput="filterResources()" type="text" placeholder="Search resources..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500">
+                    </div>
+                    <select id="resource-type-filter" onchange="filterResources()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-sky-500">
+                        <option value="all">All Types</option>
+                        <option value="book">Books & Written</option>
+                        <option value="interactive">Interactive Platforms</option>
+                        <option value="video">Video Courses & YT</option>
+                        <option value="mooc">University / MOOC</option>
+                        <option value="practice">Practice & Problem Solving</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resource Cards Grid -->
+            <div id="resources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically populated from JS array -->
+            </div>
+        </section>
+
+        <!-- TAB 3: BROWSER PYTHON SANDBOX (Pyodide Execution) -->
+        <section id="tab-playground" class="tab-content hidden space-y-4">
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+                <!-- Playground Top Control Bar -->
+                <div class="bg-slate-950 border-b border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="flex items-center gap-2 text-xs font-semibold text-slate-200 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                            <i class="fa-brands fa-python text-sky-400"></i> Python 3 Engine
+                            <span id="pyodide-status" class="w-2 h-2 rounded-full bg-amber-400" title="Engine initializing..."></span>
+                        </span>
+                        <select id="preset-code-select" onchange="loadPresetCode()" class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-sky-500">
+                            <option value="">-- Load Example Code --</option>
+                            <option value="hello">1. Hello World & Variables</option>
+                            <option value="loops">2. Loops & List Comprehensions</option>
+                            <option value="functions">3. Functions & Logic</option>
+                            <option value="dicts">4. Dictionaries & Data Parsing</option>
+                            <option value="classes">5. Object-Oriented Programming (OOP)</option>
+                            <option value="automation">6. Mini Web Scraping Simulation</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="clearCodeEditor()" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left"></i> Clear
+                        </button>
+                        <button id="run-py-btn" onclick="runPythonCode()" class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-xs font-bold text-slate-950 transition-all flex items-center gap-2 shadow-lg shadow-emerald-950/50">
+                            <i class="fa-solid fa-play"></i> Run Code (Ctrl+Enter)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Split Code Editor & Output Terminal -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800 min-h-[480px]">
+                    <!-- Editor Left Pane -->
+                    <div class="flex flex-col bg-slate-950/80 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-slate-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-code text-sky-400"></i> main.py
+                            </span>
+                            <span class="text-[10px] text-slate-500">Standard library supported</span>
+                        </div>
+                        <textarea id="code-editor" class="w-full flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 font-mono text-xs sm:text-sm leading-relaxed focus:outline-none focus:border-sky-500 resize-none min-h-[350px] code-font" spellcheck="false" placeholder="# Type your Python code here...&#10;print('Hello from r/learnpython Pathfinder!')"># Welcome to the In-Browser Python Sandbox!
+# Powered by WebAssembly Pyodide - Runs real Python directly in your browser.
+
+def calculate_study_streak(days_coded):
+    if days_coded >= 30:
+        return f"{days_coded} days! You are officially building solid coding habits! 🚀"
+    else:
+        return f"{days_coded} days. Keep pushing towards 30 days of consistent practice!"
+
+print(calculate_study_streak(14))
+
+# Try modifying this code and click 'Run Code' above!</textarea>
+                    </div>
+
+                    <!-- Terminal Right Pane -->
+                    <div class="flex flex-col bg-slate-950 p-4 font-mono text-xs">
+                        <div class="flex items-center justify-between mb-2 pb-2 border-b border-slate-800/80">
+                            <span class="text-slate-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-terminal text-emerald-400"></i> Console Output
+                            </span>
+                            <button onclick="clearTerminalOutput()" class="text-[10px] text-slate-500 hover:text-slate-300 underline">Clear Terminal</button>
+                        </div>
+                        <div id="terminal-output" class="flex-1 overflow-y-auto font-mono text-slate-300 whitespace-pre-wrap leading-relaxed space-y-1 min-h-[350px]">
+                            <span class="text-slate-500 italic">> Terminal ready. Click 'Run Code' to execute Python script...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: INTERACTIVE EXERCISES -->
+        <section id="tab-challenges" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-code text-purple-400"></i> Step-by-Step Practice Exercises
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Master core concepts mentioned in beginner paths. Load any exercise directly into the Python Sandbox!</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400">Filter Topic:</span>
+                    <select id="challenge-topic-filter" onchange="filterChallenges()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-sky-500">
+                        <option value="all">All Topics</option>
+                        <option value="basics">Variables & Math</option>
+                        <option value="conditionals">Conditionals (If/Else)</option>
+                        <option value="loops">Loops & Iteration</option>
+                        <option value="functions">Functions & Scope</option>
+                        <option value="structures">Lists & Dicts</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="challenges-list" class="space-y-4">
+                <!-- Dynamically populated from JS exercises array -->
+            </div>
+        </section>
+
+        <!-- TAB 5: PROJECT IDEAS BY TIER -->
+        <section id="tab-projects" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300 text-xs font-semibold">
+                    <i class="fa-solid fa-fire text-pink-400"></i> Overcome Tutorial Hell
+                </div>
+                <h2 class="text-2xl font-bold text-white">Project Ideas Curriculum</h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    The #1 recommendation from r/learnpython veterans is to <strong class="text-sky-400">build real projects as early as possible</strong>. Here are carefully graded project tiers designed to apply your knowledge without getting overwhelmed.
+                </p>
+            </div>
+
+            <!-- Tier Selector Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <!-- Tier 1 -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 hover:border-emerald-500/50 transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">TIER 1</span>
+                        <span class="text-xs text-slate-500">Weeks 1 - 3</span>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Beginner CLI Tools</h3>
+                    <p class="text-xs text-slate-400">Console-based programs using basic inputs, loops, functions, and string formatting.</p>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                            <span><strong>Text Adventure Game:</strong> Multi-room decision choices using nested <code class="bg-slate-950 px-1 rounded text-sky-300">if/elif</code> loops.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                            <span><strong>Number Guessing Game:</strong> Generate random numbers with <code class="bg-slate-950 px-1 rounded text-sky-300">random.randint</code> and count attempts.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                            <span><strong>CLI Password Generator:</strong> Build custom-length random passwords with letters, numbers, and symbols.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 hover:border-sky-500/50 transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold">TIER 2</span>
+                        <span class="text-xs text-slate-500">Weeks 4 - 6</span>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Automation & File Utilities</h3>
+                    <p class="text-xs text-slate-400">Interacting with local files, HTTP requests, third-party libraries, and automated data scripts.</p>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-sky-400 mt-0.5"></i>
+                            <span><strong>Desktop File Cleaner:</strong> Script using <code class="bg-slate-950 px-1 rounded text-sky-300">os</code> & <code class="bg-slate-950 px-1 rounded text-sky-300">shutil</code> to sort downloads into subfolders by extension.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-sky-400 mt-0.5"></i>
+                            <span><strong>Weather API Notifier:</strong> Fetch live weather JSON using <code class="bg-slate-950 px-1 rounded text-sky-300">requests</code> and send a summary.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-sky-400 mt-0.5"></i>
+                            <span><strong>Web Scraper to CSV:</strong> Scrape book titles/prices with <code class="bg-slate-950 px-1 rounded text-sky-300">BeautifulSoup</code> into a structured file.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tier 3 -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 hover:border-purple-500/50 transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold">TIER 3</span>
+                        <span class="text-xs text-slate-500">Weeks 7+</span>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Applied Applications & Web</h3>
+                    <p class="text-xs text-slate-400">Building user interfaces, database persistence, REST APIs, or data dashboards.</p>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-400 mt-0.5"></i>
+                            <span><strong>Flask / FastAPI Micro-Service:</strong> Build a URL Shortener or RESTful Todo API backed by SQLite database.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-400 mt-0.5"></i>
+                            <span><strong>Interactive Data Dashboard:</strong> Streamlit or Dash app displaying charts from Pandas dataframes.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-purple-400 mt-0.5"></i>
+                            <span><strong>Automated Reddit / Discord Bot:</strong> Bot responding to user triggers using <code class="bg-slate-950 px-1 rounded text-sky-300">praw</code> or <code class="bg-slate-950 px-1 rounded text-sky-300">discord.py</code>.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: REDDIT WISDOM & FAQ -->
+        <section id="tab-faq" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-2">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-amber-400"></i> Golden Rules from r/learnpython
+                </h2>
+                <p class="text-slate-300 text-sm">Advice compiled from thousands of experienced mentors and self-taught Python developers on Reddit.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-3">
+                    <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                        <i class="fa-solid fa-ban text-lg"></i> Rule #1: How to Avoid "Tutorial Hell"
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Tutorial hell happens when you watch endless videos without writing code yourself. To break out:
+                    </p>
+                    <ul class="text-xs text-slate-400 space-y-2 list-disc pl-4">
+                        <li><strong>50/50 Rule:</strong> For every 30 minutes of reading/watching, spend 30 minutes modifying the example code or building something tiny from memory.</li>
+                        <li>Intentionally break code to see what errors appear—reading error tracebacks is a fundamental developer skill.</li>
+                        <li>Never copy-paste code. Type it out line-by-line so your brain processes the syntax.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-3">
+                    <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                        <i class="fa-solid fa-circle-question text-lg"></i> Rule #2: How to Ask for Help Effectively
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        When posting questions on r/learnpython or Stack Overflow, follow these guidelines for fast, friendly responses:
+                    </p>
+                    <ul class="text-xs text-slate-400 space-y-2 list-disc pl-4">
+                        <li><strong>Share your exact code formatted properly</strong> (4-space indent or code blocks).</li>
+                        <li><strong>Provide the exact traceback error message</strong>, not just "it gives an error".</li>
+                        <li><strong>Explain expected output vs actual output</strong>, and mention what fixes you've already attempted.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-3">
+                    <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                        <i class="fa-solid fa-calendar-check text-lg"></i> Rule #3: The Consistency Imperative
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Coding is a muscle. Practicing <strong>30 minutes every single day</strong> is 10x more effective than grinding for 6 hours once on the weekend.
+                    </p>
+                    <ul class="text-xs text-slate-400 space-y-2 list-disc pl-4">
+                        <li>Keep a daily snippet journal or GitHub repository tracking small functions.</li>
+                        <li>Comment your code heavily so future-you understands your logic.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-3">
+                    <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                        <i class="fa-solid fa-terminal text-lg"></i> Rule #4: Master the Python REPL Early
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Don't wait to write entire scripts to test simple logic. Use the interactive Python terminal or our browser sandbox to inspect output line by line.
+                    </p>
+                    <ul class="text-xs text-slate-400 space-y-2 list-disc pl-4">
+                        <li>Use <code class="bg-slate-950 px-1 text-sky-300">dir(object)</code> and <code class="bg-slate-950 px-1 text-sky-300">type(variable)</code> freely to inspect data structures.</li>
+                        <li>Print variables constantly when debugging nested loops or conditionals.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <i class="fa-brands fa-python text-sky-400 text-base"></i>
+                <span>Python Pathfinder — Curated learning hub for r/learnpython</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="https://www.reddit.com/r/learnpython/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors flex items-center gap-1">
+                    <i class="fa-brands fa-reddit text-orange-500"></i> r/learnpython
+                </a>
+                <a href="https://docs.python.org/3/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors">
+                    Python Docs
+                </a>
+                <a href="https://automatetheboringstuff.com/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors">
+                    Automate the Boring Stuff
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global Data Store
+        let userQuizSelections = { 1: null, 2: null, 3: null };
+        let pyodideInstance = null;
+        let isPyodideLoading = false;
+
+        // Curated Resources List (Synthesized from r/learnpython top upvoted recommendations)
+        const resourcesData = [
+            {
+                id: "automate-boring-stuff",
+                title: "Automate the Boring Stuff with Python",
+                author: "Al Sweigart",
+                type: "book",
+                free: true,
+                rating: "4.9 / 5.0",
+                upvotes: "Top #1 Mentioned",
+                url: "https://automatetheboringstuff.com/",
+                description: "Practical programming for total beginners. Focuses on writing useful scripts immediately (Excel, PDFs, web scraping, email automation).",
+                quote: "'The absolute best starting point if you want practical results right away instead of abstract computer science theory.'",
+                badge: "Must Read"
+            },
+            {
+                id: "python-crash-course",
+                title: "Python Crash Course (3rd Edition)",
+                author: "Eric Matthes",
+                type: "book",
+                free: false,
+                rating: "4.9 / 5.0",
+                upvotes: "Highly Recommended",
+                url: "https://nostarch.com/python-crash-course-3rd-edition",
+                description: "A fast-paced, thorough introduction to Python covering fundamentals in Part 1, followed by 3 real projects (Space Invaders game, Data Visualization, Django web app).",
+                quote: "'Extremely well structured book with zero gaps in basic concepts.'",
+                badge: "Top Book"
+            },
+            {
+                id: "helsinki-mooc",
+                title: "University of Helsinki Python Programming",
+                author: "Univ. of Helsinki",
+                type: "mooc",
+                free: true,
+                rating: "4.9 / 5.0",
+                upvotes: "Community Gold Standard",
+                url: "https://programming-24.mooc.fi/",
+                description: "Free, comprehensive university-level course with hundreds of automated testing exercises in browser or VSCode.",
+                quote: "'If you want structured practice with instant testing feedback, this course is unmatched.'",
+                badge: "Free University Course"
+            },
+            {
+                id: "cs50p-harvard",
+                title: "Harvard CS50P: Intro to Programming with Python",
+                author: "Prof. David J. Malan (Harvard)",
+                type: "mooc",
+                free: true,
+                rating: "4.8 / 5.0",
+                upvotes: "Top Video MOOC",
+                url: "https://cs50.harvard.edu/python/",
+                description: "Harvard's dedicated Python course teaching functions, variables, conditionals, loops, exceptions, libraries, regular expressions, and OOP.",
+                quote: "'David Malan is arguably the best computer science instructor online.'",
+                badge: "Harvard Certified Option"
+            },
+            {
+                id: "futurecoder",
+                title: "futurecoder - Interactive Python",
+                author: "Open Source",
+                type: "interactive",
+                free: true,
+                rating: "4.8 / 5.0",
+                upvotes: "Best Interactive",
+                url: "https://futurecoder.io/",
+                description: "Free interactive browser course with step-by-step visual execution debugging, helpful hints when stuck, and error tracebacks.",
+                quote: "'Amazing for total beginners because it visualizes how variables change step-by-step.'",
+                badge: "Interactive"
+            },
+            {
+                id: "corey-schafer",
+                title: "Corey Schafer Python YouTube Series",
+                author: "Corey Schafer",
+                type: "video",
+                free: true,
+                rating: "5.0 / 5.0",
+                upvotes: "Best Video Tutorials",
+                url: "https://www.youtube.com/c/Coreyms",
+                description: "Deep dive tutorials covering beginner basics, Object-Oriented Programming (OOP), Flask, Django, Pandas, and Git.",
+                quote: "'Corey explains 'why' things work under the hood better than anyone else on YouTube.'",
+                badge: "Top YouTube"
+            },
+            {
+                id: "byte-of-python",
+                title: "A Byte of Python",
+                author: "Swaroop C H",
+                type: "book",
+                free: true,
+                rating: "4.7 / 5.0",
+                upvotes: "Gentle Beginner Book",
+                url: "https://python.swaroopch.com/",
+                description: "Free online book designed for beginners with zero prior programming experience. Very clear and easy to read.",
+                quote: "'Short, readable, and gets straight to the core syntax without confusing jargon.'",
+                badge: "Free Book"
+            },
+            {
+                id: "exercism-python",
+                title: "Exercism Python Track",
+                author: "Exercism Community",
+                type: "practice",
+                free: true,
+                rating: "4.8 / 5.0",
+                upvotes: "Best Free Practice",
+                url: "https://exercism.org/tracks/python",
+                description: "Free coding exercises with automated test suites and friendly human code reviews from volunteer mentors.",
+                quote: "'Getting actual human feedback on your code style is game-changing.'",
+                badge: "Mentored Exercises"
+            },
+            {
+                id: "freecodecamp-python",
+                title: "freeCodeCamp Scientific Computing with Python",
+                author: "freeCodeCamp",
+                type: "interactive",
+                free: true,
+                rating: "4.7 / 5.0",
+                upvotes: "Interactive Certificate",
+                url: "https://www.freecodecamp.org/learn/scientific-computing-with-python/",
+                description: "Interactive coding challenges covering fundamental Python through building 5 required portfolio projects.",
+                quote: "'Great for building portfolio projects early on.'",
+                badge: "Free Certificate"
+            }
+        ];
+
+        // Guided Challenges Array
+        const challengesData = [
+            {
+                id: 1,
+                topic: "basics",
+                title: "1. Fahrenheit to Celsius Converter",
+                difficulty: "Easy",
+                prompt: "Write a function `f_to_c(fahrenheit)` that converts a given temperature from Fahrenheit to Celsius using the formula `(F - 32) * 5 / 9` and returns the rounded value to 2 decimal places.",
+                initialCode: "def f_to_c(fahrenheit):\n    # Write your code here\n    pass\n\n# Test call\nprint(f_to_c(98.6)) # Expected: 37.0",
+                hint: "Use the round() function: round(result, 2)"
+            },
+            {
+                id: 2,
+                topic: "conditionals",
+                title: "2. Password Strength Checker",
+                difficulty: "Easy",
+                prompt: "Write a function `check_password(pwd)` that returns 'Strong' if the password is at least 8 characters long AND contains at least one digit, otherwise return 'Weak'.",
+                initialCode: "def check_password(pwd):\n    # Check length and presence of digits\n    has_digit = any(char.isdigit() for char in pwd)\n    if len(pwd) >= 8 and has_digit:\n        return 'Strong'\n    return 'Weak'\n\nprint(check_password('python123')) # Expected: Strong\nprint(check_password('python'))    # Expected: Weak",
+                hint: "Use `any(char.isdigit() for char in pwd)` to test for numeric characters."
+            },
+            {
+                id: 3,
+                topic: "loops",
+                title: "3. FizzBuzz Problem",
+                difficulty: "Medium",
+                prompt: "Return a list of strings from 1 to `n` where multiples of 3 are 'Fizz', multiples of 5 are 'Buzz', multiples of both are 'FizzBuzz', and other numbers remain string digits.",
+                initialCode: "def fizzbuzz(n):\n    result = []\n    for i in range(1, n + 1):\n        if i % 3 == 0 and i % 5 == 0:\n            result.append('FizzBuzz')\n        elif i % 3 == 0:\n            result.append('Fizz')\n        elif i % 5 == 0:\n            result.append('Buzz')\n        else:\n            result.append(str(i))\n    return result\n\nprint(fizzbuzz(15))",
+                hint: "Always test `i % 15 == 0` or both conditions combined first!"
+            },
+            {
+                id: 4,
+                topic: "structures",
+                title: "4. Frequency Counter (Word Counts)",
+                difficulty: "Medium",
+                prompt: "Write a function `count_words(text)` that accepts a string sentence and returns a dictionary with word frequency counts, ignoring case.",
+                initialCode: "def count_words(text):\n    words = text.lower().split()\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    return counts\n\nprint(count_words('Python is fun and Python is easy'))",
+                hint: "Use `dict.get(key, 0)` to easily handle missing keys when incrementing."
+            }
+        ];
+
+        // Navigation Handler
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Unhighlight all nav buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-sky-400', 'bg-slate-800/80', 'shadow-sm');
+                btn.classList.add('text-slate-400');
+            });
+
+            // Show target content
+            const targetContent = document.getElementById(`tab-${tabId}`);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            // Highlight target button
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if (targetNav) {
+                targetNav.classList.remove('text-slate-400');
+                targetNav.classList.add('text-sky-400', 'bg-slate-800/80', 'shadow-sm');
+            }
+
+            // Scroll top smooth
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // Pathfinder Quiz Logic
+        function selectQuizOption(step, value) {
+            userQuizSelections[step] = value;
+
+            if (step === 1) {
+                document.getElementById('quiz-step-1').classList.add('hidden');
+                document.getElementById('quiz-step-2').classList.remove('hidden');
+                document.getElementById('quiz-step-indicator').textContent = 'Step 2 of 3';
+            } else if (step === 2) {
+                document.getElementById('quiz-step-2').classList.add('hidden');
+                document.getElementById('quiz-step-3').classList.remove('hidden');
+                document.getElementById('quiz-step-indicator').textContent = 'Step 3 of 3';
+            } else if (step === 3) {
+                document.getElementById('quiz-step-3').classList.add('hidden');
+                document.getElementById('quiz-results').classList.remove('hidden');
+                document.getElementById('quiz-step-indicator').textContent = 'Roadmap Ready!';
+                generateRoadmapResults();
+            }
+        }
+
+        function resetQuiz() {
+            userQuizSelections = { 1: null, 2: null, 3: null };
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-step-1').classList.remove('hidden');
+            document.getElementById('quiz-step-2').classList.add('hidden');
+            document.getElementById('quiz-step-3').classList.add('hidden');
+            document.getElementById('quiz-step-indicator').textContent = 'Step 1 of 3';
+        }
+
+        function generateRoadmapResults() {
+            const container = document.getElementById('roadmap-cards-container');
+            const { 1: goal, 2: exp, 3: style } = userQuizSelections;
+
+            let primaryRec = {};
+            let secondaryRec = {};
+            let projectRec = "";
+
+            if (goal === 'automation') {
+                primaryRec = resourcesData.find(r => r.id === 'automate-boring-stuff');
+                secondaryRec = resourcesData.find(r => r.id === 'futurecoder');
+                projectRec = "Desktop File Organizer & Web Scraper script";
+            } else if (goal === 'datascience') {
+                primaryRec = resourcesData.find(r => r.id === 'helsinki-mooc');
+                secondaryRec = resourcesData.find(r => r.id === 'corey-schafer');
+                projectRec = "Data analysis on CSV datasets using Pandas & Matplotlib";
+            } else if (goal === 'software') {
+                primaryRec = resourcesData.find(r => r.id === 'python-crash-course');
+                secondaryRec = resourcesData.find(r => r.id === 'cs50p-harvard');
+                projectRec = "Flask Web App REST API or SQLite backed To-Do service";
+            } else {
+                primaryRec = resourcesData.find(r => r.id === 'cs50p-harvard');
+                secondaryRec = resourcesData.find(r => r.id === 'helsinki-mooc');
+                projectRec = "Command Line Games & Data Structure implementations";
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Step 1 Card -->
+                    <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 font-bold flex items-center justify-center shrink-0">1</div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Primary Core Resource</span>
+                            <h4 class="font-bold text-white text-base">${primaryRec.title} (${primaryRec.author})</h4>
+                            <p class="text-xs text-slate-300">${primaryRec.description}</p>
+                            <div class="pt-2">
+                                <a href="${primaryRec.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-semibold text-xs hover:bg-sky-400 transition-colors">
+                                    Open Resource <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 Card -->
+                    <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0">2</div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Secondary Practice Companion</span>
+                            <h4 class="font-bold text-white text-base">${secondaryRec.title}</h4>
+                            <p class="text-xs text-slate-300">${secondaryRec.description}</p>
+                            <div class="pt-2">
+                                <a href="${secondaryRec.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 text-slate-200 hover:text-white font-medium text-xs hover:bg-slate-700 transition-colors">
+                                    Open Resource <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 Card -->
+                    <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0">3</div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Target Hands-on Milestone</span>
+                            <h4 class="font-bold text-white text-base">Build: ${projectRec}</h4>
+                            <p class="text-xs text-slate-300">Apply your knowledge immediately after learning basic loops, functions, and modules to solidify understanding.</p>
+                            <div class="pt-2">
+                                <button onclick="switchTab('projects')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium text-xs hover:bg-emerald-500/30 transition-colors">
+                                    Explore Project Tiers <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Resource Gallery Renderer
+        function renderResources(items) {
+            const grid = document.getElementById('resources-grid');
+            grid.innerHTML = '';
+
+            items.forEach(res => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between hover:border-slate-700 transition-all space-y-4 group';
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-sky-400 text-[11px] font-semibold">
+                                ${res.badge}
+                            </span>
+                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400 text-[10px]"></i> ${res.rating}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-base group-hover:text-sky-300 transition-colors">${res.title}</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">By ${res.author}</p>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${res.description}</p>
+                        <blockquote class="text-[11px] italic text-slate-400 border-l-2 border-slate-700 pl-2 py-0.5">
+                            ${res.quote}
+                        </blockquote>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                        <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                            <i class="fa-brands fa-reddit text-orange-500"></i> ${res.upvotes}
+                        </span>
+                        <a href="${res.url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                            Visit Site <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterResources() {
+            const query = document.getElementById('resource-search').value.toLowerCase();
+            const type = document.getElementById('resource-type-filter').value;
+
+            const filtered = resourcesData.filter(res => {
+                const matchesSearch = res.title.toLowerCase().includes(query) || 
+                                     res.author.toLowerCase().includes(query) || 
+                                     res.description.toLowerCase().includes(query);
+                const matchesType = type === 'all' || res.type === type;
+                return matchesSearch && matchesType;
+            });
+
+            renderResources(filtered);
+        }
+
+        // Challenges Renderer
+        function renderChallenges(items) {
+            const list = document.getElementById('challenges-list');
+            list.innerHTML = '';
+
+            items.forEach(ch => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4';
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold uppercase">
+                                ${ch.difficulty}
+                            </span>
+                            <h3 class="font-bold text-white text-base">${ch.title}</h3>
+                        </div>
+                        <button onclick="loadChallengeToPlayground('${ch.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all self-start sm:self-auto">
+                            <i class="fa-solid fa-terminal"></i> Load in Playground
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-slate-300 leading-relaxed">${ch.prompt}</p>
+
+                    <div class="bg-slate-950 rounded-xl p-3 border border-slate-800">
+                        <pre class="font-mono text-xs text-slate-300 whitespace-pre-wrap code-font">${ch.initialCode}</pre>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs pt-1">
+                        <button onclick="toggleHint(${ch.id})" class="text-slate-400 hover:text-sky-300 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-lightbulb text-amber-400"></i> Toggle Hint
+                        </button>
+                    </div>
+
+                    <div id="hint-${ch.id}" class="hidden p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200/90">
+                        <strong>Hint:</strong> ${ch.hint}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleHint(id) {
+            const hintEl = document.getElementById(`hint-${id}`);
+            if (hintEl) hintEl.classList.toggle('hidden');
+        }
+
+        function filterChallenges() {
+            const topic = document.getElementById('challenge-topic-filter').value;
+            const filtered = topic === 'all' ? challengesData : challengesData.filter(c => c.topic === topic);
+            renderChallenges(filtered);
+        }
+
+        function loadChallengeToPlayground(id) {
+            const challenge = challengesData.find(c => c.id === parseInt(id));
+            if (challenge) {
+                document.getElementById('code-editor').value = challenge.initialCode;
+                switchTab('playground');
+            }
+        }
+
+        // Pyodide Python Engine Initialization
+        async function initPyodideEngine() {
+            const statusIndicator = document.getElementById('pyodide-status');
+            try {
+                if (typeof loadPyodide !== 'undefined') {
+                    statusIndicator.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+                    statusIndicator.title = 'Loading WebAssembly Python engine...';
+                    pyodideInstance = await loadPyodide();
+                    statusIndicator.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                    statusIndicator.title = 'Python 3 WebAssembly engine active';
+                }
+            } catch (err) {
+                console.warn('Pyodide WebAssembly initialization notice:', err);
+                statusIndicator.className = 'w-2 h-2 rounded-full bg-sky-400';
+                statusIndicator.title = 'Fallback evaluator mode ready';
+            }
+        }
+
+        // Run Python Code Function
+        async function runPythonCode() {
+            const code = document.getElementById('code-editor').value;
+            const terminal = document.getElementById('terminal-output');
+            
+            terminal.innerHTML = '<span class="text-sky-400 italic">> Executing code...</span>';
+
+            if (pyodideInstance) {
+                try {
+                    // Redirect stdout to terminal output
+                    pyodideInstance.runPython(`
+                        import sys
+                        import io
+                        sys.stdout = io.StringIO()
+                    `);
+
+                    await pyodideInstance.runPythonAsync(code);
+
+                    const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+                    terminal.innerHTML = stdout ? escapeHtml(stdout) : '<span class="text-slate-500 italic">> Code executed successfully with no output.</span>';
+                } catch (err) {
+                    terminal.innerHTML = `<span class="text-rose-400 font-bold">Traceback / Error:</span>\n<span class="text-rose-300">${escapeHtml(err.message)}</span>`;
+                }
+            } else {
+                // Lightweight simulated Python runner fallback for standard print / basic syntax
+                simulatePythonExecution(code, terminal);
+            }
+        }
+
+        function simulatePythonExecution(code, terminal) {
+            try {
+                let output = [];
+                const lines = code.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('print(') && trimmed.endsWith(')')) {
+                        const content = trimmed.substring(6, trimmed.length - 1);
+                        // Simple quote removal or eval calculation
+                        if ((content.startsWith("'") && content.endsWith("'")) || (content.startsWith('"') && content.endsWith('"'))) {
+                            output.push(content.slice(1, -1));
+                        } else {
+                            try {
+                                output.push(eval(content));
+                            } catch {
+                                output.push(content);
+                            }
+                        }
+                    }
+                });
+
+                if (output.length > 0) {
+                    terminal.innerHTML = escapeHtml(output.join('\n'));
+                } else {
+                    terminal.innerHTML = '<span class="text-emerald-400">> Output (Simulated):</span>\n' + escapeHtml(code);
+                }
+            } catch (err) {
+                terminal.innerHTML = `<span class="text-rose-400">Execution Error: ${err.message}</span>`;
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function clearCodeEditor() {
+            document.getElementById('code-editor').value = '';
+        }
+
+        function clearTerminalOutput() {
+            document.getElementById('terminal-output').innerHTML = '<span class="text-slate-500 italic">> Terminal cleared.</span>';
+        }
+
+        function loadPresetCode() {
+            const select = document.getElementById('preset-code-select');
+            const editor = document.getElementById('code-editor');
+            
+            const presets = {
+                hello: `# Python Basics: Variables and String Formatting\nname = "Python Student"\nlearning_days = 7\nprint(f"Hello, {name}! You have been coding for {learning_days} days.")\nprint(f"Next milestone: {learning_days * 2} days!")`,
+                
+                loops: `# List Comprehensions & Loops\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n# Filter even numbers and square them in one line\neven_squares = [x**2 for x in numbers if x % 2 == 0]\nprint("Original list:", numbers)\nprint("Even squares:", even_squares)`,
+                
+                functions: `# Functions with default parameters & type hints\ndef calculate_discount(price: float, discount_percent: float = 10.0) -> float:\n    """Calculates discounted price."""\n    final_price = price * (1 - discount_percent / 100)\n    return round(final_price, 2)\n\nprint("Original: $100 -> Discounted:", calculate_discount(100))\nprint("Original: $250 -> 25% Off:", calculate_discount(250, 25))`,
+                
+                dicts: `# Dictionaries & Data Parsing\nstudent_scores = {\n    "Alice": [90, 85, 92],\n    "Bob": [75, 80, 85],\n    "Charlie": [95, 98, 100]\n}\n\nfor student, scores in student_scores.items():\n    avg = sum(scores) / len(scores)\n    print(f"{student}: Average Score = {avg:.1f}")`,
+
+                classes: `# Object-Oriented Programming (OOP) Basics\nclass Student:\n    def __init__(self, name, level):\n        self.name = name\n        self.level = level\n        self.skills = []\n\n    def learn_skill(self, skill):\n        self.skills.append(skill)\n        print(f"{self.name} learned {skill}!")\n\nstudent = Student("Alex", "Beginner")\nstudent.learn_skill("Variables")\nstudent.learn_skill("Loops")\nprint(f"Current Skills: {student.skills}")`,
+
+                automation: `# Simulated Web Scraper / Text Processor\nimport re\n\nsample_text = """Contact us at support@learnpython.org or sales@example.com for help."""\nemails = re.findall(r'[\w\.-]+@[\w\.-]+', sample_text)\n\nprint("Extracted Email Addresses:")\nfor idx, email in enumerate(emails, 1):\n    print(f"{idx}. {email}")`
+            };
+
+            if (presets[select.value]) {
+                editor.value = presets[select.value];
+            }
+        }
+
+        // Global Keyboard Shortcut (Ctrl+Enter to run code in playground)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const playgroundTab = document.getElementById('tab-playground');
+                if (!playgroundTab.classList.contains('hidden')) {
+                    e.preventDefault();
+                    runPythonCode();
+                }
+            }
+        });
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderResources(resourcesData);
+            renderChallenges(challengesData);
+            initPyodideEngine();
+        });
+    </script>
+</body>
+</html>
+```
